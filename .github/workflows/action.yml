@@ -66,3 +66,31 @@ jobs:
         run: |
           cd ./MyService
           docker build -t jules77940/betfeminist:latest .
+
+      # --- ÉTAPES KUBERNETES ---
+
+      - name: Start Minikube
+        uses: medyagh/setup-minikube@latest
+        
+      - name: Deploy to Kubernetes
+        run: |
+          # On applique le fichier de configuration
+          kubectl apply -f k8s-deployment.yml
+          
+          # On laisse 20 secondes à Kubernetes pour démarrer le pod
+          sleep 20
+          
+          # On affiche l'état pour vérifier que c'est Running
+          kubectl get pods
+          kubectl get services
+
+      - name: Test Port-Forward
+        run: |
+          # On ouvre le pont réseau en arrière-plan comme tu l'as demandé
+          kubectl port-forward --address 0.0.0.0 service/betfeminist-service 4002:8080 &
+          
+          # On attend 5 secondes pour que le pont soit bien ouvert
+          sleep 5
+          
+          # On teste l'accès localement pour valider le pipeline
+          curl http://localhost:4002
