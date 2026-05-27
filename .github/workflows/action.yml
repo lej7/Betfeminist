@@ -45,12 +45,14 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+          
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
+          
       - name: Build and analyze
         env:
           SONAR_HOST_URL: https://sonarcloud.io
@@ -60,10 +62,7 @@ jobs:
           chmod +x gradlew
           ./gradlew build sonar --info     
 
-
       - name: Build Docker images
         run: |
           cd ./MyService
-          docker build -t myservice:latest .
-
-
+          docker build -t jules77940/betfeminist:latest .
